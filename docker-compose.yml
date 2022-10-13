@@ -1,6 +1,21 @@
 version: "3.9"
 services:
-  web:
+  worker:
     build: .
+    networks:
+      - no-internet
+  web:
+    image: caddy
+    networks:
+      - no-internet
+      - internet
     ports:
       - "5000:80"
+    command: caddy reverse-proxy --from :80 --to worker:80
+
+networks:
+  no-internet:
+    driver: bridge
+    internal: true
+  internet:
+    driver: bridge
